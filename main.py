@@ -46,3 +46,5 @@ async def get_organizations(user_id: str):
                     }
                 )
             return organizations
+        else:
+            return []
