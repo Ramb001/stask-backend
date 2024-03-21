@@ -33,10 +33,9 @@ async def get_organizations(user_id: str):
         organizations_ = await PB.fetch_records(
             PocketbaseCollections.ORGANIZATIONS,
             client,
-            filter=f"workers.tg_id='{user_id}'",
-            expand="owner,workers",
+            filter=f"workers.tg_id?='{user_id}'",
+            expand="owner",
         )
-
         user = await fetch_user(user_id, PB, client)
 
         if len(organizations_["items"]):
