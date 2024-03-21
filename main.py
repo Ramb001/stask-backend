@@ -5,6 +5,7 @@ import aiohttp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.helpers import fetch_user
 from src.constants import PB, PocketbaseCollections
 
 
@@ -35,14 +36,20 @@ async def get_organizations(user_id: str):
             filter=f"workers.tg_id='{user_id}'",
             expand="owner,workers",
         )
+
+        user = await fetch_user(user_id, PB, client)
+
         if len(organizations_["items"]):
             organizations = []
             for org in organizations_["items"]:
                 organizations.append(
                     {
                         "name": org["name"],
-                        "owner_name": org["expand"]["owner"]["name"],
-                        "owner_username": org["expand"]["owner"]["username"],
+                        "user_status": (
+                            "Owner"
+                            if org["expand"]["owner"]["id"] == user["id"]
+                            else "Worker"
+                        ),
                     }
                 )
             return organizations
