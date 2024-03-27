@@ -54,3 +54,27 @@ async def get_organizations(user_id: str):
             return organizations
         else:
             return []
+
+
+@app.get("/get-tasks")
+async def get_tasks(organization: str):
+    async with aiohttp.ClientSession() as client:
+        tasks = await PB.fetch_records(
+            PocketbaseCollections.TASKS,
+            client,
+            filter=f"organization.name='{organization}'",
+        )
+
+        resp = {"not_started": [], "in_progress": [], "done": []}
+        for task in tasks["items"]:
+            resp[task["status"]].append(
+                {
+                    "title": task["title"],
+                    "description": task["description"],
+                    "status": task["status"],
+                    "workers": task["workers"],
+                    "deadline": task["deadline"],
+                }
+            )
+
+        return resp

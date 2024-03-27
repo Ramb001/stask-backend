@@ -9,3 +9,4 @@ PB = Pocketbase(POCKETBASE_URL)
 class PocketbaseCollections:
     USERS = "users"
     ORGANIZATIONS = "organizations"
+    TASKS = "tasks"
