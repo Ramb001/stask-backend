@@ -69,19 +69,29 @@ async def get_tasks(organization: str):
 
         resp = []
         for task in tasks["items"]:
-            resp.append(
-                {
-                    "id": task["id"],
-                    "title": task["title"],
-                    "description": task["description"],
-                    "status": task["status"],
-                    "workers": [
-                        worker["name"] if worker["name"] != "" else worker["username"]
-                        for worker in task["expand"]["workers"]
-                    ],
-                    "deadline": task["deadline"],
-                }
-            )
+            temp = {
+                "id": task["id"],
+                "title": task["title"],
+                "description": task["description"],
+                "status": task["status"],
+                "deadline": task["deadline"],
+            }
+
+            workers = []
+            for worker in task["expand"]["workers"]:
+                workers.append(
+                    {
+                        "name": (
+                            worker["name"]
+                            if worker["name"] != ""
+                            else worker["username"]
+                        ),
+                        "value": "name" if worker["name"] != "" else "username",
+                    }
+                )
+                
+            temp["workers"] = workers
+            resp.append(temp)
 
         return resp
 
