@@ -89,7 +89,7 @@ async def get_tasks(organization: str):
                         "value": "name" if worker["name"] != "" else "username",
                     }
                 )
-                
+
             temp["workers"] = workers
             resp.append(temp)
 
