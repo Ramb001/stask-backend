@@ -67,7 +67,6 @@ async def get_tasks(organization: str):
             expand="workers",
         )
 
-        # resp = {"not_started": [], "in_progress": [], "done": []}
         resp = []
         for task in tasks["items"]:
             resp.append(
@@ -78,7 +77,7 @@ async def get_tasks(organization: str):
                     "status": task["status"],
                     "workers": [
                         worker["name"] if worker["name"] != "" else worker["username"]
-                        for worker in tasks["expand"]["wokers"]
+                        for worker in task["expand"]["workers"]
                     ],
                     "deadline": task["deadline"],
                 }
