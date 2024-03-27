@@ -5,6 +5,7 @@ import aiohttp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.models import UpdateStatus
 from src.helpers import fetch_user
 from src.constants import PB, PocketbaseCollections
 
@@ -82,8 +83,8 @@ async def get_tasks(organization: str):
 
 
 @app.post("/change-task-status")
-async def change_task_status(task_id: str, status: str):
+async def change_task_status(request: UpdateStatus):
     async with aiohttp.ClientSession() as client:
         await PB.update_record(
-            PocketbaseCollections.TASKS, task_id, client, status=status
+            PocketbaseCollections.TASKS, request.task_id, client, status=request.status
         )
