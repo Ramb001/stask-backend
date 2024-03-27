@@ -64,6 +64,7 @@ async def get_tasks(organization: str):
             PocketbaseCollections.TASKS,
             client,
             filter=f"organization.name='{organization}'",
+            expand="workers",
         )
 
         # resp = {"not_started": [], "in_progress": [], "done": []}
@@ -75,7 +76,10 @@ async def get_tasks(organization: str):
                     "title": task["title"],
                     "description": task["description"],
                     "status": task["status"],
-                    "workers": task["workers"],
+                    "workers": [
+                        worker["name"] if worker["name"] != "" else worker["username"]
+                        for worker in tasks["expand"]["wokers"]
+                    ],
                     "deadline": task["deadline"],
                 }
             )
