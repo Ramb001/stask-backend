@@ -66,9 +66,10 @@ async def get_tasks(organization: str):
             filter=f"organization.name='{organization}'",
         )
 
-        resp = {"not_started": [], "in_progress": [], "done": []}
+        # resp = {"not_started": [], "in_progress": [], "done": []}
+        resp = []
         for task in tasks["items"]:
-            resp[task["status"]].append(
+            resp.append(
                 {
                     "id": task["id"],
                     "title": task["title"],
