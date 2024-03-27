@@ -69,6 +69,7 @@ async def get_tasks(organization: str):
         for task in tasks["items"]:
             resp[task["status"]].append(
                 {
+                    "id": task["id"],
                     "title": task["title"],
                     "description": task["description"],
                     "status": task["status"],
@@ -78,3 +79,11 @@ async def get_tasks(organization: str):
             )
 
         return resp
+
+
+@app.post("/change-task-status")
+async def change_task_status(task_id: str, status: str):
+    async with aiohttp.ClientSession() as client:
+        await PB.update_record(
+            PocketbaseCollections.TASKS, task_id, client, status=status
+        )
