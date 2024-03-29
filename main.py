@@ -75,6 +75,8 @@ async def get_tasks(organization: str):
                 "description": task["description"],
                 "status": task["status"],
                 "deadline": task["deadline"],
+                "requested": task["requested"],
+                "verified": task["verified"],
             }
 
             workers = []
@@ -99,6 +101,19 @@ async def get_tasks(organization: str):
 @app.post("/change-task-status")
 async def change_task_status(request: UpdateStatus):
     async with aiohttp.ClientSession() as client:
-        await PB.update_record(
-            PocketbaseCollections.TASKS, request.task_id, client, status=request.status
-        )
+        if request.status != "done":
+            await PB.update_record(
+                PocketbaseCollections.TASKS,
+                request.task_id,
+                client,
+                status=request.status,
+            )
+        elif request.status == "done":
+            await PB.update_record(
+                PocketbaseCollections.TASKS,
+                request.task_id,
+                client,
+                status=request.status,
+                requested=True if request.user_status == "Worker" else False,
+                verified=True if request.user_status == "Owner" else False,
+            )
