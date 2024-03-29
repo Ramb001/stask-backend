@@ -137,6 +137,7 @@ async def get_workers(organization: str):
                 "name": worker["name"],
                 "username": worker["username"],
                 "tg_id": worker["tg_id"],
+                "chat_id": worker["chat_id"],
             }
             for worker in workers["items"][0]["expand"]["workers"]
         ]
