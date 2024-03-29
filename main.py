@@ -107,6 +107,8 @@ async def change_task_status(request: UpdateStatus):
                 request.task_id,
                 client,
                 status=request.status,
+                requestes=False,
+                verified=False,
             )
         elif request.status == "done":
             await PB.update_record(
