@@ -119,3 +119,24 @@ async def change_task_status(request: UpdateStatus):
                 requested=True if request.user_status == "Worker" else False,
                 verified=True if request.user_status == "Owner" else False,
             )
+
+
+@app.get("/get-workers")
+async def get_workers(organization: str):
+    async with aiohttp.ClientSession() as client:
+        workers = await PB.fetch_records(
+            PocketbaseCollections.ORGANIZATIONS,
+            client,
+            filter=f"name='{organization}'",
+            expand="workers",
+        )
+
+        return [
+            {
+                "id": worker["id"],
+                "name": worker["name"],
+                "username": worker["username"],
+                "tg_id": worker["tg_id"],
+            }
+            for worker in workers["items"][0]["expand"]["workers"]
+        ]
