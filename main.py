@@ -36,13 +36,13 @@ app.add_middleware(
 )
 
 
-@app.get("/get_organizations")
+@app.get("/get-organizations")
 async def get_organizations(user_id: str):
     async with aiohttp.ClientSession() as client:
         organizations_ = await PB.fetch_records(
             PocketbaseCollections.ORGANIZATIONS,
             client,
-            filter=f"workers.tg_id?='{user_id}'",
+            filter=f"owner.tg_id='{user_id}'||workers.tg_id?='{user_id}'",
             expand="owner",
         )
         user = await fetch_user(user_id, PB, client)

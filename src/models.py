@@ -23,3 +23,4 @@ class DeleteOrganization(BaseModel):
 
 class LeaveOrganization(BaseModel):
     organization_id: str
+    user_id: str
