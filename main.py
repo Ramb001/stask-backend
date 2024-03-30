@@ -281,7 +281,6 @@ async def leave_organization(request: LeaveOrganization):
             client,
             workers=organization["workers"],
         )
-        
 
 
 @app.post("/delete-organization")
