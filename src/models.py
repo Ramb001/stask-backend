@@ -10,3 +10,16 @@ class UpdateStatus(BaseModel):
 class DeleteWorker(BaseModel):
     organization_id: str
     worker_id: str
+
+
+class UpdateUserInfo(BaseModel):
+    user_id: str
+    new_name: str
+
+
+class DeleteOrganization:
+    organization_id: str
+
+
+class LeaveOrganization:
+    organization_id: str
