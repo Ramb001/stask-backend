@@ -260,8 +260,8 @@ async def get_user_name(user_id: str):
         return user["name"]
 
 
-@app.post("/update-user-info")
-async def update_user_info(request: UpdateUserInfo):
+@app.post("/update-user-name")
+async def update_user_name(request: UpdateUserInfo):
     async with aiohttp.ClientSession() as client:
         await PB.update_record(
             PocketbaseCollections.USERS, request.user_id, client, name=request.new_name
