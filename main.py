@@ -44,6 +44,7 @@ async def get_organizations(user_id: str):
             for org in organizations_["items"]:
                 organizations.append(
                     {
+                        "id": org["id"],
                         "name": org["name"],
                         "user_status": (
                             "Owner"
