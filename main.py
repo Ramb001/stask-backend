@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.models import DeleteWorker, UpdateStatus
-from src.helpers import fetch_organization, fetch_user
+from src.helpers import fetch_organization, fetch_tasks_lenght, fetch_user
 from src.constants import PB, PocketbaseCollections
 
 
@@ -222,6 +222,7 @@ async def get_orgnization_info(organization_id: str):
                     }
                 )
             resp["workers"] = workers
+            resp["tasks"] = await fetch_tasks_lenght(organization_id, PB, client)
 
             return resp
         else:
