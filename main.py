@@ -229,7 +229,7 @@ async def delete_worker(request: DeleteWorker):
     async with aiohttp.ClientSession() as client:
         organization = await fetch_organization(request.organization_id, PB, client)
 
-        if organization["creator"] == request.worker_id:
+        if organization["owner"] == request.worker_id:
             return False
 
         else:
