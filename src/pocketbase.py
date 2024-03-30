@@ -84,4 +84,4 @@ class Pocketbase:
             json=api_params,
             headers=headers,
         ) as resp:
-            return await resp.json()
+            return await resp.json(content_type=None)

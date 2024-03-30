@@ -287,10 +287,9 @@ async def leave_organization(request: LeaveOrganization):
 @app.post("/delete-organization")
 async def delete_organization(request: DeleteOrganization):
     async with aiohttp.ClientSession() as client:
-        test = await PB.delete_record(
+        await PB.delete_record(
             PocketbaseCollections.ORGANIZATIONS, request.organization_id, client
         )
-        return test
 
 
 if __name__ == "__main__":
