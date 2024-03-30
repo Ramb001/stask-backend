@@ -143,8 +143,8 @@ async def get_workers(organization: str):
         ]
 
 
-@app.get("/get-requested-tasks")
-async def get_requested_tasks(organization: str):
+@app.get("/get-requests")
+async def get_requests(organization: str):
     async with aiohttp.ClientSession() as client:
         requested_tasks = await PB.fetch_records(
             PocketbaseCollections.TASKS,
