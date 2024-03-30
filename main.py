@@ -58,12 +58,12 @@ async def get_organizations(user_id: str):
 
 
 @app.get("/get-tasks")
-async def get_tasks(organization: str):
+async def get_tasks(organization_id: str):
     async with aiohttp.ClientSession() as client:
         tasks = await PB.fetch_records(
             PocketbaseCollections.TASKS,
             client,
-            filter=f"organization.name='{organization}'",
+            filter=f"id='{organization_id}'",
             expand="workers",
         )
 
@@ -122,12 +122,12 @@ async def change_task_status(request: UpdateStatus):
 
 
 @app.get("/get-workers")
-async def get_workers(organization: str):
+async def get_workers(organization_id: str):
     async with aiohttp.ClientSession() as client:
         workers = await PB.fetch_records(
             PocketbaseCollections.ORGANIZATIONS,
             client,
-            filter=f"name='{organization}'",
+            filter=f"id='{organization_id}'",
             expand="workers",
         )
 
@@ -144,12 +144,12 @@ async def get_workers(organization: str):
 
 
 @app.get("/get-requests")
-async def get_requests(organization: str):
+async def get_requests(organization_id: str):
     async with aiohttp.ClientSession() as client:
         requested_tasks = await PB.fetch_records(
             PocketbaseCollections.TASKS,
             client,
-            filter="status='done'&&requested=true",
+            filter=f"organization.id='{organization_id}'&&status='done'&&requested=true",
             expand="workers",
         )
 
