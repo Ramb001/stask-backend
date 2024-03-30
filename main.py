@@ -194,14 +194,18 @@ async def get_orgnization_info(organization_id: str):
             PocketbaseCollections.ORGANIZATIONS,
             client,
             filter=f"id='{organization_id}'",
-            expand="workers",
+            expand="workers, owner",
         )
 
         if len(organization_["items"]):
             organization = organization_["items"][0]
             resp = {
                 "name": organization["name"],
-                "owner": organization["owner"],
+                "owner": (
+                    organization["expand"]["owner"]["name"]
+                    if len(organization["expand"]["owner"]["name"]) != 0
+                    else organization["expand"]["owner"]["username"]
+                ),
                 "ref_link": organization["ref_link"],
             }
             workers = []
