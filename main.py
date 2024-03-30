@@ -7,7 +7,13 @@ import aiohttp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.models import DeleteWorker, UpdateStatus
+from src.models import (
+    DeleteOrganization,
+    DeleteWorker,
+    LeaveOrganization,
+    UpdateStatus,
+    UpdateUserInfo,
+)
 from src.helpers import fetch_organization, fetch_tasks_lenght, fetch_user
 from src.constants import PB, PocketbaseCollections
 
@@ -245,6 +251,42 @@ async def delete_worker(request: DeleteWorker):
                 client,
                 workers=organization["workers"],
             )
+
+
+@app.get("/get-user-info")
+async def get_user_info(user_id: str):
+    async with aiohttp.ClientSession() as client:
+        return await fetch_user(user_id, PB, client)
+
+
+@app.post("/update-user-info")
+async def update_user_info(request: UpdateUserInfo):
+    async with aiohttp.ClientSession() as client:
+        await PB.update_record(
+            PocketbaseCollections.USERS, request.user_id, client, name=request.new_name
+        )
+
+
+@app.post("/leave-organization")
+async def leave_organization(request: LeaveOrganization):
+    async with aiohttp.ClientSession() as client:
+        organization = await fetch_organization(request.organization_id, PB, client)
+
+        organization["workers"].remove(request.worker_id)
+        await PB.update_record(
+            PocketbaseCollections.ORGANIZATIONS,
+            request.organization_id,
+            client,
+            workers=organization["workers"],
+        )
+
+
+@app.post("/delete-organization")
+async def delete_organization(request: DeleteOrganization):
+    async with aiohttp.ClientSession() as client:
+        await PB.delete_record(
+            PocketbaseCollections.ORGANIZATIONS, request.organization_id, client
+        )
 
 
 if __name__ == "__main__":
