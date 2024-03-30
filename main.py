@@ -141,3 +141,43 @@ async def get_workers(organization: str):
             }
             for worker in workers["items"][0]["expand"]["workers"]
         ]
+
+
+@app.get("/get-requested-tasks")
+async def get_requested_tasks(organization: str):
+    async with aiohttp.ClientSession() as client:
+        requested_tasks = await PB.fetch_records(
+            PocketbaseCollections.TASKS,
+            client,
+            filter="status='done'&&requested=true",
+            expand="workers",
+        )
+
+        resp = []
+
+        for task in requested_tasks["items"]:
+            temp = {
+                "id": task["id"],
+                "title": task["title"],
+                "description": task["description"],
+                "status": task["status"],
+                "deadline": task["deadline"],
+            }
+
+            workers = []
+            for worker in task["expand"]["workers"]:
+                workers.append(
+                    {
+                        "name": (
+                            worker["name"]
+                            if worker["name"] != ""
+                            else worker["username"]
+                        ),
+                        "value": "name" if worker["name"] != "" else "username",
+                    }
+                )
+
+            temp["workers"] = workers
+            resp.append(temp)
+
+        return resp
