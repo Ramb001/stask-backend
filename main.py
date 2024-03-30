@@ -1,7 +1,6 @@
 import asyncio
 import logging
 
-from aiohttp import ClientSession
 import uvicorn
 
 import aiohttp
