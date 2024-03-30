@@ -253,10 +253,11 @@ async def delete_worker(request: DeleteWorker):
             )
 
 
-@app.get("/get-user-info")
-async def get_user_info(user_id: str):
+@app.get("/get-user-name")
+async def get_user_name(user_id: str):
     async with aiohttp.ClientSession() as client:
-        return await fetch_user(user_id, PB, client)
+        user = await fetch_user(user_id, PB, client)
+        return user["name"]
 
 
 @app.post("/update-user-info")
