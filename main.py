@@ -229,14 +229,18 @@ async def delete_worker(request: DeleteWorker):
     async with aiohttp.ClientSession() as client:
         organization = await fetch_organization(request.organization_id, PB, client)
 
-        organization["workers"].remove(request.worker_id)
+        if organization["creator"] == request.worker_id:
+            return False
 
-        await PB.update_record(
-            PocketbaseCollections.ORGANIZATIONS,
-            request.organization_id,
-            client,
-            workers=organization["workers"],
-        )
+        else:
+            organization["workers"].remove(request.worker_id)
+
+            await PB.update_record(
+                PocketbaseCollections.ORGANIZATIONS,
+                request.organization_id,
+                client,
+                workers=organization["workers"],
+            )
 
 
 if __name__ == "__main__":
