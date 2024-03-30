@@ -1,12 +1,15 @@
 import asyncio
 import logging
 
+from aiohttp import ClientSession
+import uvicorn
+
 import aiohttp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.models import UpdateStatus
-from src.helpers import fetch_user
+from src.models import DeleteWorker, UpdateStatus
+from src.helpers import fetch_organization, fetch_user
 from src.constants import PB, PocketbaseCollections
 
 
@@ -182,3 +185,59 @@ async def get_requests(organization_id: str):
             resp.append(temp)
 
         return resp
+
+
+@app.get("/get-organization-info")
+async def get_orgnization_info(organization_id: str):
+    async with aiohttp.ClientSession() as client:
+        organization_ = await PB.fetch_records(
+            PocketbaseCollections.ORGANIZATIONS,
+            client,
+            filter=f"id='{organization_id}'",
+            expand="workers",
+        )
+
+        if len(organization_["items"]):
+            organization = organization_["items"][0]
+            resp = {
+                "name": organization["name"],
+                "owner": organization["owner"],
+                "ref_link": organization["ref_link"],
+            }
+            workers = []
+            for worker in organization["expand"]["workers"]:
+                workers.append(
+                    {
+                        "id": worker["id"],
+                        "name": (
+                            worker["name"]
+                            if worker["name"] != ""
+                            else worker["username"]
+                        ),
+                        "value": "name" if worker["name"] != "" else "username",
+                    }
+                )
+            resp["workers"] = workers
+
+            return resp
+        else:
+            return []
+
+
+@app.post("/delete-worker")
+async def delete_worker(request: DeleteWorker):
+    async with aiohttp.ClientSession() as client:
+        organization = await fetch_organization(request.organization_id, PB, client)
+
+        organization["workers"].remove(request.worker_id)
+
+        await PB.update_record(
+            PocketbaseCollections.ORGANIZATIONS,
+            request.organization_id,
+            client,
+            workers=organization["workers"],
+        )
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=9090, reload=True)
