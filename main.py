@@ -273,13 +273,14 @@ async def leave_organization(request: LeaveOrganization):
     async with aiohttp.ClientSession() as client:
         organization = await fetch_organization(request.organization_id, PB, client)
 
-        organization["workers"].remove(request.worker_id)
-        await PB.update_record(
+        organization["workers"].remove(request.user_id)
+        test = await PB.update_record(
             PocketbaseCollections.ORGANIZATIONS,
             request.organization_id,
             client,
             workers=organization["workers"],
         )
+        return test
 
 
 @app.post("/delete-organization")
