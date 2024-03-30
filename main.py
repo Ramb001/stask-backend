@@ -64,7 +64,7 @@ async def get_tasks(organization_id: str):
         tasks = await PB.fetch_records(
             PocketbaseCollections.TASKS,
             client,
-            filter=f"id='{organization_id}'",
+            filter=f"orgnization.id='{organization_id}'",
             expand="workers",
         )
 
