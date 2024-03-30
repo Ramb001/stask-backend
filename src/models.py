@@ -17,9 +17,9 @@ class UpdateUserInfo(BaseModel):
     new_name: str
 
 
-class DeleteOrganization:
+class DeleteOrganization(BaseModel):
     organization_id: str
 
 
-class LeaveOrganization:
+class LeaveOrganization(BaseModel):
     organization_id: str
