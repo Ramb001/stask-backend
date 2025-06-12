@@ -94,7 +94,7 @@ async def get_tasks(organization_id: str):
             }
 
             workers = []
-            if task["expand"]["workers"]:
+            if "expand" in task:
                 for worker in task["expand"]["workers"]:
                     workers.append(
                         {
