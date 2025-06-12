@@ -2,7 +2,7 @@ import os
 
 from src.pocketbase import Pocketbase
 
-POCKETBASE_URL = "http://127.0.0.1:8090"
+POCKETBASE_URL = "http://188.120.232.32:8090"
 PB = Pocketbase(POCKETBASE_URL)
 
 
