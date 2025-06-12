@@ -80,6 +80,7 @@ async def get_tasks(organization_id: str):
             filter=f"organization.id='{organization_id}'",
             expand="workers",
         )
+        logging.info(tasks)
 
         resp = []
         for task in tasks["items"]:
