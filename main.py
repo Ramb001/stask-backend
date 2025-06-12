@@ -80,7 +80,6 @@ async def get_tasks(organization_id: str):
             filter=f"organization.id='{organization_id}'",
             expand="workers",
         )
-        logging.info(tasks)
 
         resp = []
         for task in tasks["items"]:
@@ -95,17 +94,18 @@ async def get_tasks(organization_id: str):
             }
 
             workers = []
-            for worker in task["expand"]["workers"]:
-                workers.append(
-                    {
-                        "name": (
-                            worker["name"]
-                            if worker["name"] != ""
-                            else worker["username"]
-                        ),
-                        "value": "name" if worker["name"] != "" else "username",
-                    }
-                )
+            if task["expand"]["workers"]:
+                for worker in task["expand"]["workers"]:
+                    workers.append(
+                        {
+                            "name": (
+                                worker["name"]
+                                if worker["name"] != ""
+                                else worker["username"]
+                            ),
+                            "value": "name" if worker["name"] != "" else "username",
+                        }
+                    )
 
             temp["workers"] = workers
             resp.append(temp)
@@ -220,18 +220,19 @@ async def get_orgnization_info(organization_id: str):
                 "ref_link": organization["ref_link"],
             }
             workers = []
-            for worker in organization["expand"]["workers"]:
-                workers.append(
-                    {
-                        "id": worker["id"],
-                        "name": (
-                            worker["name"]
-                            if worker["name"] != ""
-                            else worker["username"]
-                        ),
-                        "value": "name" if worker["name"] != "" else "username",
-                    }
-                )
+            if organization["expand"]["workers"]:
+                for worker in organization["expand"]["workers"]:
+                    workers.append(
+                        {
+                            "id": worker["id"],
+                            "name": (
+                                worker["name"]
+                                if worker["name"] != ""
+                                else worker["username"]
+                            ),
+                            "value": "name" if worker["name"] != "" else "username",
+                        }
+                    )
             resp["workers"] = workers
             resp["tasks"] = await fetch_tasks_lenght(organization_id, PB, client)
 
