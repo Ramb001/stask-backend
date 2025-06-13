@@ -317,6 +317,7 @@ async def process_goal(goal: Goal):
 async def approve_tasks(data: TaskApproval):
     try:
         async with aiohttp.ClientSession() as client:
+            creator = await fetch_user(data.user_id, PB, client)
             for task in data.tasks:
                 temp = await PB.add_record(
                     PocketbaseCollections.TASKS,
@@ -324,7 +325,7 @@ async def approve_tasks(data: TaskApproval):
                     title=task.title,
                     description=task.description,
                     organization=data.organization_id,
-                    creator=data.user_id,
+                    creator=creator["id"],
                     worker=task.worker_id,
                     deadline=task.deadline,
                     priority=task.priority,
