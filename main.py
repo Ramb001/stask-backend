@@ -304,21 +304,9 @@ async def delete_organization(request: DeleteOrganization):
 async def process_goal(goal: Goal):
     try:
         async with aiohttp.ClientSession() as client:
-            goal_record = await PB.add_record(
-                PocketbaseCollections.GOALS,
-                client,
-                creator=goal.user_id,
-                message=goal.message,
-                status="pending_approval",
-                organization=goal.organization_id,
-                department=goal.department,
-            )
-
             task_decomposition = await decompose_goal(
                 goal.message, goal.organization_id, goal.department, client
             )
-            print(goal_record, task_decomposition)
-            task_decomposition["goal_id"] = goal_record["id"]
 
         return task_decomposition
     except Exception as e:

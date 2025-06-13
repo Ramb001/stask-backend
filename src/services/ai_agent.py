@@ -113,7 +113,6 @@ Return a single valid JSON object in this exact format (in Russian language):
                     "description": task_data["description"],
                     "status": "pending",
                     "created_at": datetime.now(),
-                    "goal_id": "",
                     "deadline": task_data["deadline"],
                     "recommended_executors": task_data["recommended_executors"],
                     "priority": task_data["priority"],
@@ -121,4 +120,4 @@ Return a single valid JSON object in this exact format (in Russian language):
                 }
             )
 
-        return {"goal_id": "", "tasks": tasks}
+        return {"tasks": tasks}
