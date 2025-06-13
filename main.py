@@ -358,7 +358,7 @@ async def get_organization_departments(organization_id: str):
         org_data = await PB.fetch_records(
             PocketbaseCollections.DEPARTMENTS,
             client,
-            filter=f"company.id='{organization_id}'",
+            filter=f'company.id="{organization_id}"',
         )
         if not org_data["items"]:
             return []
