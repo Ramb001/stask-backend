@@ -352,5 +352,21 @@ async def approve_tasks(data: TaskApproval):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/get-departments")
+async def get_organization_departments(organization_id: str):
+    async with aiohttp.ClientSession() as client:
+        org_data = await PB.fetch_records(
+            PocketbaseCollections.DEPARTMENTS,
+            client,
+            filter=f"company.id='{organization_id}'",
+        )
+        if not org_data["items"]:
+            return []
+        return [
+            dept["name"]
+            for dept in org_data["items"][0].get("expand", {}).get("departments", [])
+        ]
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=80, reload=True)
