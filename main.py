@@ -313,8 +313,6 @@ async def process_goal(goal: Goal):
                 department=goal.department,
             )
 
-            print(goal_record)
-
             task_decomposition = await decompose_goal(
                 goal.message, goal.organization_id, goal.department, client
             )
@@ -325,12 +323,12 @@ async def process_goal(goal: Goal):
                 await PB.add_record(
                     PocketbaseCollections.TASKS,
                     client,
-                    title=task.get("title"),
-                    description=task.get("description"),
-                    status=task.get("status"),
+                    title=task.title,
+                    description=task.description,
+                    status=task.status,
                     organization=goal.organization_id,
-                    deadline=task.get("deadline"),
-                    priority=task.get("priority"),
+                    deadline=task.deadline,
+                    priority=task.priority,
                     creator=goal.user_id,
                 )
 
