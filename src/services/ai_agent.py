@@ -7,10 +7,7 @@ from datetime import datetime
 from ..models import Task, TaskDecomposition
 from ..constants import PB, PocketbaseCollections
 
-OPENROUTER_API_KEY = (
-    os.getenv("OPENROUTER_API_KEY")
-    or "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"
-)
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openrouter/openai/gpt-4o")
 
 
