@@ -304,7 +304,7 @@ async def process_goal(goal: Goal):
     try:
         async with aiohttp.ClientSession() as client:
             # Create a new goal record
-            goal_record = await PB.create_record(
+            goal_record = await PB.add_record(
                 PocketbaseCollections.GOALS,
                 client,
                 creator=goal.user_id,
@@ -323,17 +323,16 @@ async def process_goal(goal: Goal):
             # Store the decomposed tasks
             for task in task_decomposition.tasks:
                 task.goal_id = goal_record["id"]
-                await PB.create_record(
+                await PB.add_record(
                     PocketbaseCollections.TASKS,
                     client,
-                    {
-                        "title": task.title,
-                        "description": task.description,
-                        "status": task.status,
-                        "organization": goal.organization_id,
-                        "deadline": task.deadline,
-                        "priority": task.priority,
-                    },
+                    title=task.title,
+                    description=task.description,
+                    status=task.status,
+                    organization=goal.organization_id,
+                    deadline=task.deadline,
+                    priority=task.priority,
+                    creator=goal.user_id,
                 )
 
         return task_decomposition
