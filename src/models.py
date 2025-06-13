@@ -31,7 +31,6 @@ class LeaveOrganization(BaseModel):
 class Goal(BaseModel):
     user_id: str
     message: str
-    chat_id: str
     organization_id: str
     department: str
 

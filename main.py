@@ -302,9 +302,6 @@ async def delete_organization(request: DeleteOrganization):
 @app.post("/process-goal")
 async def process_goal(goal: Goal):
     try:
-        # Generate a unique ID for the goal
-        goal_id = str(uuid.uuid4())
-
         async with aiohttp.ClientSession() as client:
             # Create a new goal record
             goal_record = await PB.create_record(
@@ -321,11 +318,11 @@ async def process_goal(goal: Goal):
             task_decomposition = await decompose_goal(
                 goal.message, goal.organization_id, goal.department, client
             )
-            task_decomposition.goal_id = goal_id
+            task_decomposition.goal_id = goal_record["id"]
 
             # Store the decomposed tasks
             for task in task_decomposition.tasks:
-                task.goal_id = goal_id
+                task.goal_id = goal_record["id"]
                 await PB.create_record(
                     PocketbaseCollections.TASKS,
                     client,
@@ -333,12 +330,9 @@ async def process_goal(goal: Goal):
                         "title": task.title,
                         "description": task.description,
                         "status": task.status,
-                        "goal_id": task.goal_id,
                         "organization": goal.organization_id,
                         "deadline": task.deadline,
-                        "recommended_executors": task.recommended_executors,
                         "priority": task.priority,
-                        "depends_on": task.depends_on,
                     },
                 )
 
