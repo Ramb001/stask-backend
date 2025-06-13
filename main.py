@@ -362,7 +362,7 @@ async def get_organization_departments(organization_id: str):
         )
         if not org_data["items"]:
             return []
-        return [dept["name"] for dept in org_data["items"]]
+        return [{"name": dept["name"], "id": dept["id"]} for dept in org_data["items"]]
 
 
 if __name__ == "__main__":
