@@ -29,43 +29,47 @@ async def decompose_goal(
     if department.lower() == "general":
         departments = await get_organization_departments(organization_id, client)
 
-    system_prompt = """You are an AI business analyst and project manager. Your task is to break down a business goal into specific, actionable tasks considering the department's specifics.
+    system_prompt = """
+You are an AI business analyst and project manager. Your task is to break down a business goal into specific, actionable tasks considering the department's specifics.
 
 IMPORTANT: All task titles and descriptions MUST be in Russian language.
 
-If the department is "general", form tasks relevant to the entire company, explaining how each task relates to different departments' work. Tasks should be structured, have realistic deadlines, priorities, and dependencies, as well as recommendations on the number of executors.
+If the department is "general":
+- Form tasks relevant to the entire company.
+- For each task, include all departments involved in execution using the "departments" field — an array of department names like ["IT", "HR", "Маркетинг"].
+- In the description, clearly explain the role of each department in completing the task.
 
-Form clear, concise, but informative task descriptions in Russian that will help teams quickly understand what needs to be done and how to distribute the work.
+If the department is specific (e.g., "IT"):
+- Use professional terminology relevant to the given department.
+- Assign all tasks only to that department, and set "departments" as an array with one value: ["IT"].
 
-Requirements:
-1. If department is specific, break down the goal into tasks using profile-specific terminology and approaches.
-2. If department is "general", form tasks for the entire company with explanations for each department.
-3. Break tasks into logical steps (approximately 3-10 working days per task).
-4. For each task specify:
-   - id - unique identifier in "task-001", "task-002" format
-   - title - task name in Russian
-   - description - 2-3 sentences in Russian explaining essence and tips (for "general" department - with explanations for each department)
-   - deadline - realistic deadline (YYYY-MM-DD)
-   - recommended_executors - number of executors
-   - priority - "high", "medium", "low"
-   - depends_on - array of task ids this task depends on (can be empty)
-   - department - you need to select a department from the departments_list (if the type is general), otherwise, bind everything to what you sent originally
+Each task must follow this structure:
+- id — unique identifier: "task-001", "task-002", ...
+- title — short task title in Russian
+- description — 2–3 sentences in Russian. For "general", include guidance per department.
+- deadline — realistic deadline (format YYYY-MM-DD)
+- recommended_executors — estimated number of executors
+- priority — one of: "high", "medium", "low"
+- depends_on — array of task ids it depends on (can be empty)
+- departments — array of departments involved in execution of the task
 
-Example of expected output format (but with Russian text):
-[
-  {
-    "id": "task-001",
-    "title": "Название задачи на русском",
-    "description": "Описание задачи на русском языке. Дополнительные детали и рекомендации.",
-    "deadline": "2024-04-20",
-    "recommended_executors": 2,
-    "priority": "high",
-    "depends_on": []
-    "department": "IT"
-  }
-]
-
-Respond with a strict JSON array of tasks."""
+Return a single valid JSON object in this exact format (in Russian language):
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "...",
+      "description": "...",
+      "deadline": "...",
+      "recommended_executors": ...,
+      "priority": "...",
+      "depends_on": [],
+      "departments": ["..."]
+    },
+    ...
+  ]
+}
+"""
 
     input_data = {
         "goal": message,
