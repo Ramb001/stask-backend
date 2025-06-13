@@ -46,6 +46,7 @@ class Task(BaseModel):
     recommended_executors: int
     priority: str
     depends_on: List[str] = []
+    workers: Optional[List[str]] = []
 
 
 class TaskDecomposition(BaseModel):
@@ -54,9 +55,10 @@ class TaskDecomposition(BaseModel):
 
 
 class TaskApproval(BaseModel):
-    goal_id: str
-    approved: bool
     user_id: str
+    goal_id: str
+    organization_id: str
+    tasks: List[Task]
 
 
 class ChatMessage(BaseModel):

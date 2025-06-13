@@ -52,6 +52,7 @@ Requirements:
    - recommended_executors - number of executors
    - priority - "high", "medium", "low"
    - depends_on - array of task ids this task depends on (can be empty)
+   - department - you need to select a department from the departments_list (if the type is general), otherwise, bind everything to what you sent originally
 
 Example of expected output format (but with Russian text):
 [
@@ -63,6 +64,7 @@ Example of expected output format (but with Russian text):
     "recommended_executors": 2,
     "priority": "high",
     "depends_on": []
+    "department": "IT"
   }
 ]
 
@@ -104,18 +106,18 @@ Respond with a strict JSON array of tasks."""
         tasks = []
         for task_data in tasks_data:
             tasks.append(
-                Task(
-                    id=task_data["id"],
-                    title=task_data["title"],
-                    description=task_data["description"],
-                    status="pending",
-                    created_at=datetime.now(),
-                    goal_id="",
-                    deadline=task_data["deadline"],
-                    recommended_executors=task_data["recommended_executors"],
-                    priority=task_data["priority"],
-                    depends_on=task_data["depends_on"],
-                )
+                {
+                    "id": task_data["id"],
+                    "title": task_data["title"],
+                    "description": task_data["description"],
+                    "status": "pending",
+                    "created_at": datetime.now(),
+                    "goal_id": "",
+                    "deadline": task_data["deadline"],
+                    "recommended_executors": task_data["recommended_executors"],
+                    "priority": task_data["priority"],
+                    "depends_on": task_data["depends_on"],
+                }
             )
 
-        return TaskDecomposition(goal_id="", tasks=tasks)
+        return {"goal_id": "", "tasks": tasks}

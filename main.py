@@ -12,6 +12,7 @@ from src.models import (
     DeleteOrganization,
     DeleteWorker,
     LeaveOrganization,
+    TaskDecomposition,
     UpdateStatus,
     UpdateUserInfo,
     Goal,
@@ -317,21 +318,6 @@ async def process_goal(goal: Goal):
                 goal.message, goal.organization_id, goal.department, client
             )
             task_decomposition.goal_id = goal_record["id"]
-            print(task_decomposition)
-
-            for task in task_decomposition.tasks:
-                task.goal_id = goal_record["id"]
-                await PB.add_record(
-                    PocketbaseCollections.TASKS,
-                    client,
-                    title=task.title,
-                    description=task.description,
-                    status=task.status,
-                    organization=goal.organization_id,
-                    deadline=task.deadline,
-                    priority=task.priority,
-                    creator=goal.user_id,
-                )
 
         return task_decomposition
     except Exception as e:
@@ -339,103 +325,31 @@ async def process_goal(goal: Goal):
 
 
 @app.post("/approve-tasks")
-async def approve_tasks(approval: TaskApproval):
+async def approve_tasks(data: TaskApproval):
     try:
         async with aiohttp.ClientSession() as client:
-            # Update goal status
-            await PB.update_record(
-                PocketbaseCollections.GOALS,
-                approval.goal_id,
-                client,
-                status="approved" if approval.approved else "rejected",
-            )
-
-            if approval.approved:
-                # If approved, update all tasks to active status
-                tasks = await PB.fetch_records(
+            for task in data.tasks:
+                department = await PB.fetch_records(
+                    PocketbaseCollections.DEPARTMENTS,
+                    client,
+                    filter=f"company.id='{data.organization_id}'&name='{task.department}'",
+                )
+                await PB.add_record(
                     PocketbaseCollections.TASKS,
                     client,
-                    filter=f"goal_id='{approval.goal_id}'",
+                    title=task.title,
+                    description=task.description,
+                    organization=data.organization_id,
+                    suborganization=department["items"][0]["id"],
+                    creator=data.user_id,
+                    workers=task.workers,
+                    deadline=task.deadline.strftime("%d/%m/%Y"),
+                    status="not_started",
                 )
 
-                for task in tasks["items"]:
-                    await PB.update_record(
-                        PocketbaseCollections.TASKS, task["id"], client, status="active"
-                    )
-
-                return {"message": "Tasks approved and activated"}
-            else:
-                # If rejected, mark tasks as cancelled
-                tasks = await PB.fetch_records(
-                    PocketbaseCollections.TASKS,
-                    client,
-                    filter=f"goal_id='{approval.goal_id}'",
-                )
-
-                for task in tasks["items"]:
-                    await PB.update_record(
-                        PocketbaseCollections.TASKS,
-                        task["id"],
-                        client,
-                        status="cancelled",
-                    )
-
-                return {"message": "Tasks rejected and cancelled"}
+            return {"message": "Tasks added"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/chat/send")
-async def send_chat_message(msg: ChatMessage):
-    async with aiohttp.ClientSession() as client:
-        record = await PB.create_record(
-            PocketbaseCollections.CHAT_MESSAGES,
-            client,
-            {
-                "chat_id": msg.chat_id,
-                "user_id": msg.user_id,
-                "role": "user",
-                "content": msg.content,
-                "timestamp": msg.timestamp.isoformat(),
-                "goal_id": msg.goal_id,
-            },
-        )
-        return record
-
-
-@app.get("/chat/history")
-async def get_chat_history(chat_id: str = None, goal_id: str = None):
-    async with aiohttp.ClientSession() as client:
-        filter_str = []
-        if chat_id:
-            filter_str.append(f"chat_id='{chat_id}'")
-        if goal_id:
-            filter_str.append(f"goal_id='{goal_id}'")
-        filter_query = "&&".join(filter_str) if filter_str else None
-        messages = await PB.fetch_records(
-            PocketbaseCollections.CHAT_MESSAGES,
-            client,
-            **({"filter": filter_query} if filter_query else {}),
-        )
-        return messages["items"]
-
-
-@app.post("/chat/ai-reply")
-async def send_ai_message(msg: ChatMessage):
-    async with aiohttp.ClientSession() as client:
-        record = await PB.create_record(
-            PocketbaseCollections.CHAT_MESSAGES,
-            client,
-            {
-                "chat_id": msg.chat_id,
-                "user_id": None,
-                "role": "ai",
-                "content": msg.content,
-                "timestamp": msg.timestamp.isoformat(),
-                "goal_id": msg.goal_id,
-            },
-        )
-        return record
 
 
 if __name__ == "__main__":
