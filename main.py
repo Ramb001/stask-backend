@@ -327,7 +327,7 @@ async def approve_tasks(data: TaskApproval):
                     creator=data.user_id,
                     worker=task.worker_id,
                     deadline=task.deadline,
-                    priority=task.priority
+                    priority=task.priority,
                     status="not_started",
                 )
 
