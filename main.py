@@ -317,9 +317,9 @@ async def process_goal(goal: Goal):
                 goal.message, goal.organization_id, goal.department, client
             )
             task_decomposition.goal_id = goal_record["id"]
+            print(task_decomposition)
 
             for task in task_decomposition.tasks:
-                print(task)
                 task.goal_id = goal_record["id"]
                 await PB.add_record(
                     PocketbaseCollections.TASKS,
