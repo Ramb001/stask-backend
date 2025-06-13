@@ -310,14 +310,11 @@ async def process_goal(goal: Goal):
             goal_record = await PB.create_record(
                 PocketbaseCollections.GOALS,
                 client,
-                {
-                    "id": goal_id,
-                    "user_id": goal.user_id,
-                    "message": goal.message,
-                    "status": "pending_approval",
-                    "organization": goal.organization_id,
-                    "department": goal.department,
-                },
+                creator=goal.user_id,
+                message=goal.message,
+                status="pending_approval",
+                organization=goal.organization_id,
+                department=goal.department,
             )
 
             # Use AI to decompose the goal into tasks
