@@ -317,6 +317,7 @@ async def process_goal(goal: Goal):
             task_decomposition = await decompose_goal(
                 goal.message, goal.organization_id, goal.department, client
             )
+            print(goal_record, task_decomposition)
             task_decomposition["goal_id"] = goal_record["id"]
 
         return task_decomposition
