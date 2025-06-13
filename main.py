@@ -329,6 +329,8 @@ async def approve_tasks(data: TaskApproval):
                     deadline=task.deadline,
                     priority=task.priority,
                     status="not_started",
+                    requested=False,
+                    verified=False,
                 )
 
             return {"message": "Tasks added"}
