@@ -56,7 +56,6 @@ class TaskDecomposition(BaseModel):
 
 class TaskApproval(BaseModel):
     user_id: str
-    goal_id: str
     organization_id: str
     tasks: List[Task]
 
