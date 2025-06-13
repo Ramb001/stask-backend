@@ -19,10 +19,7 @@ async def get_organization_departments(organization_id: str, client) -> List[str
     )
     if not org_data["items"]:
         return []
-    return [
-        dept["name"]
-        for dept in org_data["items"][0].get("expand", {}).get("departments", [])
-    ]
+    return [dept["name"] for dept in org_data["items"]]
 
 
 async def decompose_goal(

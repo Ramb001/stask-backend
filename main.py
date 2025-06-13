@@ -314,9 +314,12 @@ async def process_goal(goal: Goal):
                 department=goal.department,
             )
 
+            print(goal_record)
+
             task_decomposition = await decompose_goal(
                 goal.message, goal.organization_id, goal.department, client
             )
+            print(task_decomposition)
             task_decomposition.goal_id = goal_record["id"]
 
         return task_decomposition
