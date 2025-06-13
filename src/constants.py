@@ -13,3 +13,9 @@ class PocketbaseCollections:
     GOALS = "goals"
     CHAT_MESSAGES = "chat_messages"
     DEPARTMENTS = "departments"
+
+
+class TaskStatuses:
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"

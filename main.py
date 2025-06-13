@@ -21,7 +21,7 @@ from src.models import (
 )
 from src.services.ai_agent import decompose_goal
 from src.helpers import fetch_organization, fetch_tasks_lenght, fetch_user
-from src.constants import PB, PocketbaseCollections
+from src.constants import PB, PocketbaseCollections, TaskStatuses
 
 
 logging.basicConfig(
@@ -318,7 +318,7 @@ async def approve_tasks(data: TaskApproval):
     try:
         async with aiohttp.ClientSession() as client:
             for task in data.tasks:
-                await PB.add_record(
+                temp = await PB.add_record(
                     PocketbaseCollections.TASKS,
                     client,
                     title=task.title,
@@ -328,10 +328,9 @@ async def approve_tasks(data: TaskApproval):
                     worker=task.worker_id,
                     deadline=task.deadline,
                     priority=task.priority,
-                    status="not_started",
-                    requested=False,
-                    verified=False,
+                    status=TaskStatuses.NOT_STARTED,
                 )
+                print(temp)
 
             return {"message": "Tasks added"}
     except Exception as e:
