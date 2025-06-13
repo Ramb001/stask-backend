@@ -12,3 +12,4 @@ class PocketbaseCollections:
     TASKS = "tasks"
     GOALS = "goals"
     CHAT_MESSAGES = "chat_messages"
+    DEPARTMENTS = "departments"

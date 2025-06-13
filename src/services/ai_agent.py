@@ -8,16 +8,14 @@ from ..models import Task, TaskDecomposition
 from ..constants import PB, PocketbaseCollections
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openrouter/openai/gpt-4o")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/o4-mini")
 
 
 async def get_organization_departments(organization_id: str, client) -> List[str]:
-    """Fetch departments for an organization from PocketBase"""
     org_data = await PB.fetch_records(
-        PocketbaseCollections.ORGANIZATIONS,
+        PocketbaseCollections.DEPARTMENTS,
         client,
-        filter=f"id='{organization_id}'",
-        expand="departments",
+        filter=f"company.id='{organization_id}'",
     )
     if not org_data["items"]:
         return []
@@ -30,10 +28,6 @@ async def get_organization_departments(organization_id: str, client) -> List[str
 async def decompose_goal(
     message: str, organization_id: str, department: str, client
 ) -> TaskDecomposition:
-    """
-    Send the user's goal to OpenRouter's Claude-3-Opus model for task decomposition
-    """
-    # Fetch departments if it's a general department request
     departments = []
     if department.lower() == "general":
         departments = await get_organization_departments(organization_id, client)
@@ -104,6 +98,8 @@ Respond with a strict JSON array of tasks."""
 
         result = response.json()
         tasks_data = json.loads(result["choices"][0]["message"]["content"])
+        if isinstance(tasks_data, dict) and "tasks" in tasks_data:
+            tasks_data = tasks_data["tasks"]
 
         tasks = []
         for task_data in tasks_data:
@@ -114,7 +110,7 @@ Respond with a strict JSON array of tasks."""
                     description=task_data["description"],
                     status="pending",
                     created_at=datetime.now(),
-                    goal_id="",  # This will be set when saving to database
+                    goal_id="",
                     deadline=task_data["deadline"],
                     recommended_executors=task_data["recommended_executors"],
                     priority=task_data["priority"],
@@ -122,6 +118,6 @@ Respond with a strict JSON array of tasks."""
                 )
             )
 
-        return TaskDecomposition(
-            goal_id="", tasks=tasks  # This will be set when saving to database
-        )
+        print(tasks)
+
+        return TaskDecomposition(goal_id="", tasks=tasks)

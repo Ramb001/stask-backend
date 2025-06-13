@@ -303,7 +303,6 @@ async def delete_organization(request: DeleteOrganization):
 async def process_goal(goal: Goal):
     try:
         async with aiohttp.ClientSession() as client:
-            # Create a new goal record
             goal_record = await PB.add_record(
                 PocketbaseCollections.GOALS,
                 client,
@@ -314,24 +313,22 @@ async def process_goal(goal: Goal):
                 department=goal.department,
             )
 
-            # Use AI to decompose the goal into tasks
             task_decomposition = await decompose_goal(
                 goal.message, goal.organization_id, goal.department, client
             )
             task_decomposition.goal_id = goal_record["id"]
 
-            # Store the decomposed tasks
             for task in task_decomposition.tasks:
                 task.goal_id = goal_record["id"]
                 await PB.add_record(
                     PocketbaseCollections.TASKS,
                     client,
-                    title=task.title,
-                    description=task.description,
-                    status=task.status,
+                    title=task.get("title"),
+                    description=task.get("description"),
+                    status=task.get("status"),
                     organization=goal.organization_id,
-                    deadline=task.deadline,
-                    priority=task.priority,
+                    deadline=task.get("deadline"),
+                    priority=task.get("priority"),
                     creator=goal.user_id,
                 )
 
