@@ -54,10 +54,18 @@ class TaskDecomposition(BaseModel):
     tasks: List[Task]
 
 
+class TaskNew(BaseModel):
+    title: str
+    description: str
+    priority: str
+    worker_id: str
+    deadline: str
+
+
 class TaskApproval(BaseModel):
-    user_id: str
     organization_id: str
-    tasks: List[Task]
+    tasks: List[TaskNew]
+    user_id: str
 
 
 class ChatMessage(BaseModel):
