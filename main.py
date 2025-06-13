@@ -319,6 +319,7 @@ async def process_goal(goal: Goal):
             task_decomposition.goal_id = goal_record["id"]
 
             for task in task_decomposition.tasks:
+                print(task)
                 task.goal_id = goal_record["id"]
                 await PB.add_record(
                     PocketbaseCollections.TASKS,
