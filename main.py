@@ -318,21 +318,16 @@ async def approve_tasks(data: TaskApproval):
     try:
         async with aiohttp.ClientSession() as client:
             for task in data.tasks:
-                department = await PB.fetch_records(
-                    PocketbaseCollections.DEPARTMENTS,
-                    client,
-                    filter=f"company.id='{data.organization_id}'&name='{task.department}'",
-                )
                 await PB.add_record(
                     PocketbaseCollections.TASKS,
                     client,
                     title=task.title,
                     description=task.description,
                     organization=data.organization_id,
-                    suborganization=department["items"][0]["id"],
                     creator=data.user_id,
-                    workers=task.workers,
-                    deadline=task.deadline.strftime("%d/%m/%Y"),
+                    worker=task.worker_id,
+                    deadline=task.deadline,
+                    priority=task.priority
                     status="not_started",
                 )
 
