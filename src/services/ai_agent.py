@@ -118,6 +118,4 @@ Respond with a strict JSON array of tasks."""
                 )
             )
 
-        print(tasks)
-
         return TaskDecomposition(goal_id="", tasks=tasks)
