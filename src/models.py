@@ -46,7 +46,7 @@ class Task(BaseModel):
     recommended_executors: int
     priority: str
     depends_on: List[str] = []
-    workers: Optional[List[str]] = []
+    worker_id: Optional[str] = ""
 
 
 class TaskDecomposition(BaseModel):
