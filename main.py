@@ -87,7 +87,7 @@ async def get_tasks(organization_id: str):
             temp = {
                 "id": task["id"],
                 "title": task["title"],
-                "prority": task["priority"],
+                "priority": task["priority"],
                 "description": task["description"],
                 "status": task["status"],
                 "deadline": task["deadline"],
