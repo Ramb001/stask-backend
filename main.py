@@ -360,13 +360,9 @@ async def get_organization_departments(organization_id: str):
             client,
             filter=f'company.id="{organization_id}"',
         )
-        print(org_data)
         if not org_data["items"]:
             return []
-        return [
-            dept["name"]
-            for dept in org_data["items"][0].get("expand", {}).get("departments", [])
-        ]
+        return [dept["name"] for dept in org_data["items"]]
 
 
 if __name__ == "__main__":
