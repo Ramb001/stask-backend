@@ -183,17 +183,17 @@ async def get_requests(organization_id: str):
 
             workers = []
             if "expand" in task:
-            for worker in task["expand"]["workers"]:
-                workers.append(
-                    {
-                        "name": (
-                            worker["name"]
-                            if worker["name"] != ""
-                            else worker["username"]
-                        ),
-                        "value": "name" if worker["name"] != "" else "username",
-                    }
-                )
+                for worker in task["expand"]["workers"]:
+                    workers.append(
+                        {
+                            "name": (
+                                worker["name"]
+                                if worker["name"] != ""
+                                else worker["username"]
+                            ),
+                            "value": "name" if worker["name"] != "" else "username",
+                        }
+                    )
 
             temp["workers"] = workers
             resp.append(temp)
